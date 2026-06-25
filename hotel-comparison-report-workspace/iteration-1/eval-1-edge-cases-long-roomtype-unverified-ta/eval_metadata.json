@@ -1,0 +1,15 @@
+{
+  "eval_id": 1,
+  "eval_name": "edge-cases-long-roomtype-unverified-ta",
+  "prompt": "Hotel comparison report for the Birch/Kowalski wedding (May 14-16 2027, Biltmore Estate, Asheville) with two edge cases: a very long room type name (Grand Bohemian) and a hotel with no verifiable TripAdvisor ranking (The Radical).",
+  "assertions": [
+    "Output is a valid .docx that opens without errors",
+    "Every blank spacer paragraph is exactly 6pt or 10pt — no 10.5pt or default-size blank paragraphs anywhere",
+    "The table containing the long room type 'Premier Two Queen Mountain View Suite with Balcony and Kitchenette' does not exceed the usable page width",
+    "The Radical's TripAdvisor line reads 'TripAdvisor rating not verified' (no invented ranking)",
+    "The unverified TripAdvisor ranking is surfaced to the user as a Needs Verification item in the agent's summary",
+    "Grand Bohemian ranking is hyperlinked and formatted exactly as '#18 of 28 Hotels in Asheville'",
+    "The JC Room Blocks contact line appears exactly once, as the last paragraph of the document",
+    "Divider lines between hotel sections use the thinThickThinMediumGap paragraph border"
+  ]
+}

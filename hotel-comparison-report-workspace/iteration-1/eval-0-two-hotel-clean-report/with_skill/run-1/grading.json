@@ -1,0 +1,50 @@
+{
+  "expectations": [
+    {
+      "text": "Output is a valid .docx that opens without errors",
+      "passed": true,
+      "evidence": "Opened Hotel Comparison Report - Martinez_Chen.docx: 67 paragraphs, 2 tables"
+    },
+    {
+      "text": "Every blank spacer paragraph is exactly 6pt or 10pt \u2014 no 10.5pt or default-size blank paragraphs anywhere",
+      "passed": true,
+      "evidence": "10 6pt spacers, 4 10pt spacers, offending blank sizes: none"
+    },
+    {
+      "text": "All body paragraphs have space before = 0 and space after = 0 (except the 14pt-after dates line)",
+      "passed": true,
+      "evidence": "violations: none"
+    },
+    {
+      "text": "Both rate tables fit within the usable page width and the Offered Rate column is shaded gray (D9D9D9)",
+      "passed": true,
+      "evidence": "too wide: none; gray shading per table: [True, True]"
+    },
+    {
+      "text": "TripAdvisor ranking lines use exactly the format '#X of Y Hotels in Savannah' and are hyperlinked to the TripAdvisor URLs provided",
+      "passed": true,
+      "evidence": "found rankings: ['#24 of 141 Hotels in Savannah', '#67 of 141 Hotels in Savannah']; tripadvisor hyperlink rels present: True"
+    },
+    {
+      "text": "Divider lines between hotel sections use the thinThickThinMediumGap paragraph border with exactly one 10pt spacer before and after",
+      "passed": true,
+      "evidence": "divider style present: True; 10pt spacer adjacency ok: True"
+    },
+    {
+      "text": "Rate data is accurate: DeSoto Deluxe King $249/$419 and Hyatt City View King $209/$359 appear in the tables",
+      "passed": true,
+      "evidence": "checked $249, $419, $209, $359 presence"
+    },
+    {
+      "text": "The JC Room Blocks contact line appears exactly once, as the last paragraph of the document",
+      "passed": true,
+      "evidence": "occurrences: 1; last non-empty paragraph is contact line: True"
+    }
+  ],
+  "summary": {
+    "passed": 8,
+    "failed": 0,
+    "total": 8,
+    "pass_rate": 1.0
+  }
+}

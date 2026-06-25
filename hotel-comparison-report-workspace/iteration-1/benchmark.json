@@ -1,0 +1,303 @@
+{
+  "metadata": {
+    "skill_name": "hotel-comparison-report",
+    "skill_path": "/Users/shannon/Documents/claude tet/hotel-comparison-report",
+    "executor_model": "claude-fable-5",
+    "analyzer_model": "<model-name>",
+    "timestamp": "2026-06-12T00:53:53Z",
+    "evals_run": [
+      0,
+      1
+    ],
+    "runs_per_configuration": 1
+  },
+  "runs": [
+    {
+      "eval_id": 0,
+      "configuration": "with_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 1.0,
+        "passed": 8,
+        "failed": 0,
+        "total": 8,
+        "time_seconds": 61.4,
+        "tokens": 23506,
+        "tool_calls": 0,
+        "errors": 0
+      },
+      "expectations": [
+        {
+          "text": "Output is a valid .docx that opens without errors",
+          "passed": true,
+          "evidence": "Opened Hotel Comparison Report - Martinez_Chen.docx: 67 paragraphs, 2 tables"
+        },
+        {
+          "text": "Every blank spacer paragraph is exactly 6pt or 10pt \u2014 no 10.5pt or default-size blank paragraphs anywhere",
+          "passed": true,
+          "evidence": "10 6pt spacers, 4 10pt spacers, offending blank sizes: none"
+        },
+        {
+          "text": "All body paragraphs have space before = 0 and space after = 0 (except the 14pt-after dates line)",
+          "passed": true,
+          "evidence": "violations: none"
+        },
+        {
+          "text": "Both rate tables fit within the usable page width and the Offered Rate column is shaded gray (D9D9D9)",
+          "passed": true,
+          "evidence": "too wide: none; gray shading per table: [True, True]"
+        },
+        {
+          "text": "TripAdvisor ranking lines use exactly the format '#X of Y Hotels in Savannah' and are hyperlinked to the TripAdvisor URLs provided",
+          "passed": true,
+          "evidence": "found rankings: ['#24 of 141 Hotels in Savannah', '#67 of 141 Hotels in Savannah']; tripadvisor hyperlink rels present: True"
+        },
+        {
+          "text": "Divider lines between hotel sections use the thinThickThinMediumGap paragraph border with exactly one 10pt spacer before and after",
+          "passed": true,
+          "evidence": "divider style present: True; 10pt spacer adjacency ok: True"
+        },
+        {
+          "text": "Rate data is accurate: DeSoto Deluxe King $249/$419 and Hyatt City View King $209/$359 appear in the tables",
+          "passed": true,
+          "evidence": "checked $249, $419, $209, $359 presence"
+        },
+        {
+          "text": "The JC Room Blocks contact line appears exactly once, as the last paragraph of the document",
+          "passed": true,
+          "evidence": "occurrences: 1; last non-empty paragraph is contact line: True"
+        }
+      ],
+      "notes": []
+    },
+    {
+      "eval_id": 1,
+      "configuration": "with_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 1.0,
+        "passed": 8,
+        "failed": 0,
+        "total": 8,
+        "time_seconds": 64.9,
+        "tokens": 23455,
+        "tool_calls": 0,
+        "errors": 0
+      },
+      "expectations": [
+        {
+          "text": "Output is a valid .docx that opens without errors",
+          "passed": true,
+          "evidence": "Opened Hotel Comparison Report - Birch_Kowalski.docx: 63 paragraphs, 2 tables"
+        },
+        {
+          "text": "Every blank spacer paragraph is exactly 6pt or 10pt \u2014 no 10.5pt or default-size blank paragraphs anywhere",
+          "passed": true,
+          "evidence": "10 6pt spacers, 4 10pt spacers, offending blank sizes: none"
+        },
+        {
+          "text": "The table containing the long room type does not exceed the usable page width",
+          "passed": true,
+          "evidence": "table widths over 10656 dxa: none"
+        },
+        {
+          "text": "The Radical's TripAdvisor line reads 'TripAdvisor rating not verified' (no invented ranking)",
+          "passed": true,
+          "evidence": "'not verified' present: True; Asheville ranking lines found: 1 (must be 1, Grand Bohemian only)"
+        },
+        {
+          "text": "The unverified TripAdvisor ranking is surfaced to the user as a Needs Verification item in the agent's summary",
+          "passed": true,
+          "evidence": "summary mentions verification: True, mentions The Radical: True"
+        },
+        {
+          "text": "Grand Bohemian ranking is hyperlinked and formatted exactly as '#18 of 28 Hotels in Asheville'",
+          "passed": true,
+          "evidence": "found: ['#18 of 28 Hotels in Asheville']"
+        },
+        {
+          "text": "Divider lines between hotel sections use the thinThickThinMediumGap paragraph border",
+          "passed": true,
+          "evidence": "present: True"
+        },
+        {
+          "text": "The JC Room Blocks contact line appears exactly once, as the last paragraph of the document",
+          "passed": true,
+          "evidence": "occurrences: 1; last non-empty paragraph is contact line: True"
+        }
+      ],
+      "notes": []
+    },
+    {
+      "eval_id": 0,
+      "configuration": "without_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 0.375,
+        "passed": 3,
+        "failed": 5,
+        "total": 8,
+        "time_seconds": 105.8,
+        "tokens": 22741,
+        "tool_calls": 0,
+        "errors": 0
+      },
+      "expectations": [
+        {
+          "text": "Output is a valid .docx that opens without errors",
+          "passed": true,
+          "evidence": "Opened Martinez-Chen_Wedding_Hotel_Comparison_Report.docx: 38 paragraphs, 3 tables"
+        },
+        {
+          "text": "Every blank spacer paragraph is exactly 6pt or 10pt \u2014 no 10.5pt or default-size blank paragraphs anywhere",
+          "passed": false,
+          "evidence": "0 6pt spacers, 0 10pt spacers, offending blank sizes: [None, None]"
+        },
+        {
+          "text": "All body paragraphs have space before = 0 and space after = 0 (except the 14pt-after dates line)",
+          "passed": true,
+          "evidence": "violations: none"
+        },
+        {
+          "text": "Both rate tables fit within the usable page width and the Offered Rate column is shaded gray (D9D9D9)",
+          "passed": false,
+          "evidence": "too wide: none; gray shading per table: [False, False, False]"
+        },
+        {
+          "text": "TripAdvisor ranking lines use exactly the format '#X of Y Hotels in Savannah' and are hyperlinked to the TripAdvisor URLs provided",
+          "passed": false,
+          "evidence": "found rankings: []; tripadvisor hyperlink rels present: False"
+        },
+        {
+          "text": "Divider lines between hotel sections use the thinThickThinMediumGap paragraph border with exactly one 10pt spacer before and after",
+          "passed": false,
+          "evidence": "divider style present: False; 10pt spacer adjacency ok: True"
+        },
+        {
+          "text": "Rate data is accurate: DeSoto Deluxe King $249/$419 and Hyatt City View King $209/$359 appear in the tables",
+          "passed": true,
+          "evidence": "checked $249, $419, $209, $359 presence"
+        },
+        {
+          "text": "The JC Room Blocks contact line appears exactly once, as the last paragraph of the document",
+          "passed": false,
+          "evidence": "occurrences: 0; last non-empty paragraph is contact line: False"
+        }
+      ],
+      "notes": []
+    },
+    {
+      "eval_id": 1,
+      "configuration": "without_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 0.375,
+        "passed": 3,
+        "failed": 5,
+        "total": 8,
+        "time_seconds": 142.7,
+        "tokens": 35594,
+        "tool_calls": 0,
+        "errors": 0
+      },
+      "expectations": [
+        {
+          "text": "Output is a valid .docx that opens without errors",
+          "passed": true,
+          "evidence": "Opened Birch-Kowalski_Wedding_Hotel_Comparison_Report.docx: 57 paragraphs, 1 tables"
+        },
+        {
+          "text": "Every blank spacer paragraph is exactly 6pt or 10pt \u2014 no 10.5pt or default-size blank paragraphs anywhere",
+          "passed": false,
+          "evidence": "0 6pt spacers, 0 10pt spacers, offending blank sizes: [None, None]"
+        },
+        {
+          "text": "The table containing the long room type does not exceed the usable page width",
+          "passed": true,
+          "evidence": "table widths over 10656 dxa: none"
+        },
+        {
+          "text": "The Radical's TripAdvisor line reads 'TripAdvisor rating not verified' (no invented ranking)",
+          "passed": false,
+          "evidence": "'not verified' present: False; Asheville ranking lines found: 0 (must be 1, Grand Bohemian only)"
+        },
+        {
+          "text": "The unverified TripAdvisor ranking is surfaced to the user as a Needs Verification item in the agent's summary",
+          "passed": true,
+          "evidence": "summary mentions verification: True, mentions The Radical: True"
+        },
+        {
+          "text": "Grand Bohemian ranking is hyperlinked and formatted exactly as '#18 of 28 Hotels in Asheville'",
+          "passed": false,
+          "evidence": "found: []"
+        },
+        {
+          "text": "Divider lines between hotel sections use the thinThickThinMediumGap paragraph border",
+          "passed": false,
+          "evidence": "present: False"
+        },
+        {
+          "text": "The JC Room Blocks contact line appears exactly once, as the last paragraph of the document",
+          "passed": false,
+          "evidence": "occurrences: 0; last non-empty paragraph is contact line: False"
+        }
+      ],
+      "notes": []
+    }
+  ],
+  "run_summary": {
+    "with_skill": {
+      "pass_rate": {
+        "mean": 1.0,
+        "stddev": 0.0,
+        "min": 1.0,
+        "max": 1.0
+      },
+      "time_seconds": {
+        "mean": 63.15,
+        "stddev": 2.4749,
+        "min": 61.4,
+        "max": 64.9
+      },
+      "tokens": {
+        "mean": 23480.5,
+        "stddev": 36.0624,
+        "min": 23455,
+        "max": 23506
+      }
+    },
+    "without_skill": {
+      "pass_rate": {
+        "mean": 0.375,
+        "stddev": 0.0,
+        "min": 0.375,
+        "max": 0.375
+      },
+      "time_seconds": {
+        "mean": 124.25,
+        "stddev": 26.0922,
+        "min": 105.8,
+        "max": 142.7
+      },
+      "tokens": {
+        "mean": 29167.5,
+        "stddev": 9088.4435,
+        "min": 22741,
+        "max": 35594
+      }
+    },
+    "delta": {
+      "pass_rate": "+0.62",
+      "time_seconds": "-61.1",
+      "tokens": "-5687"
+    }
+  },
+  "notes": [],
+  "analyst_observations": [
+    "With-skill runs scored 8/8 on both evals; baseline runs scored 3/8 on both. The skill's deterministic generator script is what guarantees the exact 6pt/10pt spacer paragraphs, gray-shaded rate tables, divider style, and single trailing contact line - baselines invented their own (visually unrelated) layouts with comparison tables and recommendation sections.",
+    "Baseline runs were also slower and costlier: 106-143s and up to 35.6k tokens vs 61-65s and ~23.5k tokens with the skill, since baselines designed a document from scratch.",
+    "Non-discriminating assertion: 'Output is a valid .docx' passes in every configuration - both conditions reliably produce openable files. The discriminating assertions are all formatting-contract checks.",
+    "Edge cases worked: the 64-character room type stayed within page width (room column capped), and the unverified TripAdvisor hotel rendered 'TripAdvisor rating not verified' and was surfaced as a Needs Verification item.",
+    "Only 1 run per configuration this iteration, so no variance data yet; the generator is deterministic by construction, which is the property the user cares about."
+  ]
+}

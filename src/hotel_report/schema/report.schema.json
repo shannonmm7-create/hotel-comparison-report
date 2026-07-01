@@ -1,0 +1,64 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://jcroomblocks.com/schemas/hotel-comparison-report.json",
+  "title": "Hotel Comparison Report",
+  "description": "Data contract for the JC Room Blocks Hotel Comparison Report. This is the ONLY seam between the report and its data source: produce an object matching this schema and `hotel-report render` fills the approved .docx template.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["prepared_for", "arrival_date", "departure_date", "venue_name", "hotels"],
+  "properties": {
+    "prepared_for": {"type": "string", "minLength": 1, "description": "Client / event name, e.g. 'Rivera-Okafor Wedding'."},
+    "arrival_date": {"type": "string", "minLength": 1, "description": "Human-readable arrival date, e.g. 'May 14, 2027'."},
+    "departure_date": {"type": "string", "minLength": 1, "description": "Human-readable departure date, e.g. 'May 16, 2027'."},
+    "venue_name": {"type": "string", "minLength": 1, "description": "The event venue; shared by all hotels (distances are measured from it)."},
+    "hotels": {
+      "type": "array",
+      "minItems": 1,
+      "description": "One entry per hotel; the template repeats its hotel block for each.",
+      "items": {"$ref": "#/$defs/hotel"}
+    }
+  },
+  "$defs": {
+    "hotel": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["name", "address_line_1", "city_state_zip", "rooms", "distance_from_venue", "cutoff"],
+      "properties": {
+        "name": {"type": "string", "minLength": 1},
+        "website_url": {"type": "string", "format": "uri", "description": "If present, the hotel name becomes a hyperlink to this URL."},
+        "address_line_1": {"type": "string", "minLength": 1},
+        "city_state_zip": {"type": "string", "minLength": 1},
+        "tripadvisor": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["text"],
+          "properties": {
+            "text": {"type": "string", "minLength": 1, "description": "Display text, e.g. '#4 of 45 hotels in Charleston'."},
+            "url": {"type": "string", "format": "uri", "description": "If present, the text becomes a hyperlink to this URL."}
+          }
+        },
+        "rooms": {
+          "type": "array",
+          "minItems": 1,
+          "description": "Rate-table rows; the template repeats one row per entry.",
+          "items": {"$ref": "#/$defs/room"}
+        },
+        "features": {"type": "array", "items": {"type": "string"}, "description": "Hotel Features bullets (full text of each bullet)."},
+        "concessions": {"type": "array", "items": {"type": "string"}, "description": "Concessions bullets."},
+        "contracting_options": {"type": "array", "items": {"type": "string"}, "description": "Contracting Option bullets."},
+        "distance_from_venue": {"type": ["string", "number"], "minLength": 1, "description": "Numeric part only; the template appends ' miles'. e.g. '8.1'."},
+        "cutoff": {"type": "string", "minLength": 1, "description": "Lead time only; the template appends ' prior to arrival'. e.g. '30 days'."}
+      }
+    },
+    "room": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["room_type", "offered_rate", "rack_rate"],
+      "properties": {
+        "room_type": {"type": "string", "minLength": 1},
+        "offered_rate": {"type": ["number", "string"], "description": "Number (formatted as $1,234) or a pre-formatted string ('Waived')."},
+        "rack_rate": {"type": ["number", "string"]}
+      }
+    }
+  }
+}

@@ -1,0 +1,101 @@
+{
+  "prepared_for": "Rivera–Okafor Wedding",
+  "arrival_date": "May 14, 2027",
+  "departure_date": "May 16, 2027",
+  "venue_name": "Legare Waring House",
+  "hotels": [
+    {
+      "name": "The Dewberry",
+      "website_url": "https://www.thedewberrycharleston.com/",
+      "address_line_1": "334 Meeting Street",
+      "city_state_zip": "Charleston, SC 29403",
+      "tripadvisor": {
+        "text": "#4 of 45 hotels in Charleston",
+        "url": "https://www.tripadvisor.com/Hotel_Review-g54171-d8407246-Reviews-The_Dewberry-Charleston_South_Carolina.html"
+      },
+      "rooms": [
+        {"room_type": "King Room", "offered_rate": 279, "rack_rate": 459},
+        {"room_type": "Double Queen Room", "offered_rate": 309, "rack_rate": 489},
+        {"room_type": "Parlor Suite", "offered_rate": 1250, "rack_rate": 1800}
+      ],
+      "features": [
+        "On-site restaurant & bar – Henrietta's",
+        "On-site market – The Living Room",
+        "Room service – Yes",
+        "Fitness center",
+        "Outdoor pool and terrace",
+        "Valet parking $45 per night"
+      ],
+      "concessions": [
+        "Complimentary breakfast – Yes, for group guests",
+        "Complimentary Wi-Fi",
+        "Complimentary gift bag distribution at the front desk (non-personalized)"
+      ],
+      "contracting_options": [
+        "Courtesy agreement — no financial responsibility to client",
+        "Hotel can hold 12 rooms per night"
+      ],
+      "distance_from_venue": "8.1",
+      "cutoff": "30 days"
+    },
+    {
+      "name": "Hotel Bennett",
+      "website_url": "https://www.hotelbennett.com/",
+      "address_line_1": "404 King Street",
+      "city_state_zip": "Charleston, SC 29403",
+      "tripadvisor": {
+        "text": "#2 of 45 hotels in Charleston",
+        "url": "https://www.tripadvisor.com/Hotel_Review-g54171-d15092352-Reviews-Hotel_Bennett-Charleston_South_Carolina.html"
+      },
+      "rooms": [
+        {"room_type": "Deluxe King", "offered_rate": 389, "rack_rate": 649},
+        {"room_type": "Two Queen", "offered_rate": 419, "rack_rate": 699}
+      ],
+      "features": [
+        "On-site restaurant & bar – Gabrielle",
+        "Rooftop pool bar – Fiat Lux",
+        "Full-service spa",
+        "Fitness center",
+        "Indoor/outdoor pool"
+      ],
+      "concessions": [
+        "Complimentary/discounted parking – $39 per night (discounted from $59)",
+        "Complimentary Wi-Fi for loyalty members"
+      ],
+      "contracting_options": [
+        "90% attrition — client responsible for 90% of the contracted block",
+        "> Cut-off date for this option is 45 days prior to arrival",
+        "Credit card authorization required at signing"
+      ],
+      "distance_from_venue": "8.4",
+      "cutoff": "45 days"
+    },
+    {
+      "name": "The Restoration",
+      "website_url": "https://www.therestorationhotel.com/",
+      "address_line_1": "75 Wentworth Street",
+      "city_state_zip": "Charleston, SC 29401",
+      "tripadvisor": {
+        "text": "#6 of 45 hotels in Charleston",
+        "url": "https://www.tripadvisor.com/Hotel_Review-g54171-d1503437-Reviews-The_Restoration-Charleston_South_Carolina.html"
+      },
+      "rooms": [
+        {"room_type": "Studio Suite", "offered_rate": 345, "rack_rate": 525}
+      ],
+      "features": [
+        "On-site coffee bar – The Rise",
+        "Rooftop bar – The Watch",
+        "Fitness center"
+      ],
+      "concessions": [
+        "Complimentary Wi-Fi",
+        "Complimentary bike rentals"
+      ],
+      "contracting_options": [
+        "Courtesy agreement — no financial responsibility to client"
+      ],
+      "distance_from_venue": "8.0",
+      "cutoff": "30 days"
+    }
+  ]
+}

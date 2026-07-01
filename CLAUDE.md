@@ -10,7 +10,8 @@ Essentials:
   hand-edit the `.docx`.**
 - **Always run through `uv`** (locked deps, cross-platform):
   `uv run hotel-report render <data.json> <out.docx>`.
-- Data must match `src/hotel_report/schema/report.schema.json`; validate before rendering
+- Data must match the Pydantic models in `src/hotel_report/models.py` (see
+  `uv run hotel-report schema`); validate before rendering
   (`uv run hotel-report validate <data.json>`).
 - Keep `uv run pytest` and `uv run ruff check .` green.
 - **Before editing `render.py` / `build_template.py`, read

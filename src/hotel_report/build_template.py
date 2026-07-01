@@ -12,26 +12,37 @@ whenever the client sends an updated source document.
 The tricky OOXML/docxtpl details this relies on are documented in
 ``docs/docx-templating-notes.md`` — read that before editing this file.
 """
+
 from __future__ import annotations
 
 import copy
+from collections.abc import Callable
 from pathlib import Path
+from typing import Any
 
 from docx import Document
 from docx.oxml import OxmlElement
 from docx.oxml.ns import qn
 
+from hotel_report._validate import validated
+
+# lxml/python-docx OOXML elements have no useful static type here.
+Element = Any
+
 
 # --------------------------------------------------------------------------- #
 # low-level run helpers                                                        #
 # --------------------------------------------------------------------------- #
-def _runs_with_text(el):
+@validated
+def _runs_with_text(el: Element) -> list[tuple[Element, Element]]:
     """(run, w:t) pairs for every run under ``el`` -- ``iter`` descends into
     ``<w:hyperlink>``, which ``Paragraph.runs`` does not (see notes)."""
     return [(r, r.find(qn("w:t"))) for r in el.iter(qn("w:r")) if r.find(qn("w:t")) is not None]
 
 
-def _coalesce(runs):
+@validated
+def _coalesce(runs: list[tuple[Element, Element]]) -> tuple[str, list[int]]:
+    """Join every run's text into one string plus an owner map (char -> run index)."""
     text, owner = [], []
     for i, (_r, t) in enumerate(runs):
         s = t.text or ""
@@ -40,16 +51,21 @@ def _coalesce(runs):
     return "".join(text), owner
 
 
-def _set_text(t, s):
+@validated
+def _set_text(t: Element, s: str) -> None:
+    """Set a ``<w:t>``'s text, preserving leading/trailing whitespace."""
     t.text = s
     t.set(qn("xml:space"), "preserve")
 
 
-def _ptext(el):
+@validated
+def _ptext(el: Element) -> str:
+    """The coalesced visible text of ``el``."""
     return "".join((t.text or "") for _r, t in _runs_with_text(el))
 
 
-def replace_tokens(el, replacements):
+@validated
+def replace_tokens(el: Element, replacements: dict[str, str]) -> None:  # pylint: disable=too-many-locals
     """Replace literal substrings inside ``el`` while preserving run formatting.
 
     Works even when a placeholder is split across several runs (Word does this
@@ -84,7 +100,8 @@ def replace_tokens(el, replacements):
         _set_text(t, buffers[idx])
 
 
-def _make_tag_p(tag):
+@validated
+def _make_tag_p(tag: str) -> Element:
     """A bare paragraph holding a Jinja control tag."""
     p = OxmlElement("w:p")
     r = OxmlElement("w:r")
@@ -95,7 +112,8 @@ def _make_tag_p(tag):
     return p
 
 
-def _reset_to_placeholder(p, tag):
+@validated
+def _reset_to_placeholder(p: Element, tag: str) -> None:
     """Replace a paragraph's inline content with a single clean run holding
     ``tag``, keeping the paragraph properties and any image runs.
 
@@ -109,9 +127,7 @@ def _reset_to_placeholder(p, tag):
         if child.tag == qn("w:pPr"):
             continue
         # keep an image/drawing run (e.g. an inline logo) if one is present
-        if child.tag == qn("w:r") and (
-            child.find(qn("w:drawing")) is not None or child.find(qn("w:pict")) is not None
-        ):
+        if child.tag == qn("w:r") and (child.find(qn("w:drawing")) is not None or child.find(qn("w:pict")) is not None):
             continue
         p.remove(child)
     r = OxmlElement("w:r")
@@ -121,7 +137,8 @@ def _reset_to_placeholder(p, tag):
     p.append(r)
 
 
-def _set_row_tag(tr, tag):
+@validated
+def _set_row_tag(tr: Element, tag: str) -> None:
     """Clear every cell of a table row and put a single Jinja tag in the first
     cell. docxtpl's ``{%tr%}`` handling replaces the whole row with that tag."""
     for i, tc in enumerate(tr.findall(qn("w:tc"))):
@@ -137,18 +154,32 @@ def _set_row_tag(tr, tag):
             p.append(r)
 
 
-def _find_p(body, pred):
+@validated
+def _find_p(body: Element, pred: Callable[[str], bool]) -> Element | None:
+    """First paragraph whose coalesced text satisfies ``pred`` (or ``None``)."""
     for ch in body.iterchildren(qn("w:p")):
         if pred(_ptext(ch)):
             return ch
     return None
 
 
-def _find_all_p(body, pred):
+@validated
+def _find_all_p(body: Element, pred: Callable[[str], bool]) -> list[Element]:
+    """Every paragraph whose coalesced text satisfies ``pred``."""
     return [ch for ch in body.iterchildren(qn("w:p")) if pred(_ptext(ch))]
 
 
-def _bullet_loop(header_p, item_var, iterable):
+@validated
+def _must_find(body: Element, pred: Callable[[str], bool]) -> Element:
+    """Like :func:`_find_p` but raise if no paragraph matches (a required anchor)."""
+    el = _find_p(body, pred)
+    if el is None:
+        raise RuntimeError("expected paragraph not found in source template")
+    return el
+
+
+@validated
+def _bullet_loop(header_p: Element, item_var: str, iterable: str) -> None:
     """Turn the bullet paragraphs following a section header into a single
     ``{%p for %}`` loop, keeping the first bullet's '• + tab' formatting."""
     body = header_p.getparent()
@@ -164,7 +195,8 @@ def _bullet_loop(header_p, item_var, iterable):
         body.remove(extra)
     runs = _runs_with_text(tb)
 
-    def _is_content(t):
+    def _is_content(t: Element) -> bool:
+        """True if the run holds the bullet's label text (not the • or the tab)."""
         s = t.text or ""
         return any(c.isalpha() for c in s) or "[" in s
 
@@ -179,18 +211,24 @@ def _bullet_loop(header_p, item_var, iterable):
 # --------------------------------------------------------------------------- #
 # the transform                                                               #
 # --------------------------------------------------------------------------- #
-def build(src_path, out_path):
+@validated
+def build(src_path: str | Path, out_path: str | Path) -> Path:  # noqa: PLR0915
+    """Transform the source ``.docx`` at ``src_path`` into a Jinja template at
+    ``out_path`` and return the output path."""
+    # one linear OOXML transform — many locals/statements are expected here:
+    # pylint: disable=too-many-locals,too-many-statements
     doc = Document(str(src_path))
     body = doc.element.body
 
     # event-level scalars (outside the hotel loop)
-    replace_tokens(_find_p(body, lambda t: "Prepared for" in t),
-                   {"[Client/Event Name]": "{{ prepared_for }}"})
-    replace_tokens(_find_p(body, lambda t: "[Arrival Date]" in t),
-                   {"[Arrival Date]": "{{ arrival_date }}", "[Departure Date]": "{{ departure_date }}"})
+    replace_tokens(_must_find(body, lambda t: "Prepared for" in t), {"[Client/Event Name]": "{{ prepared_for }}"})
+    replace_tokens(
+        _must_find(body, lambda t: "[Arrival Date]" in t),
+        {"[Arrival Date]": "{{ arrival_date }}", "[Departure Date]": "{{ departure_date }}"},
+    )
 
     # anchors for hotel block 1 (the canonical loop body)
-    p_name1 = _find_p(body, lambda t: t.strip() == "[Hotel Name]")
+    p_name1 = _must_find(body, lambda t: t.strip() == "[Hotel Name]")
     p_addr1 = _find_all_p(body, lambda t: t.strip() == "[Hotel Address Line 1]")[0]
     p_city1 = _find_all_p(body, lambda t: t.strip() == "[City, State ZIP]")[0]
     p_ta1 = _find_all_p(body, lambda t: t.strip() == "[TripAdvisor rating/ranking with hyperlink]")[0]
@@ -199,8 +237,8 @@ def build(src_path, out_path):
     feat_h = _find_all_p(body, lambda t: t.strip() == "Hotel Features:")[0]
     conc_h = _find_all_p(body, lambda t: t.strip() == "Concessions:")[0]
     ctr_h = _find_all_p(body, lambda t: t.strip() == "Contracting Option:")[0]
-    p_name2 = _find_p(body, lambda t: t.strip() == "[Additional Hotel Name]")
-    footer = _find_p(body, lambda t: "JC Room Blocks" in t)
+    p_name2 = _must_find(body, lambda t: t.strip() == "[Additional Hotel Name]")
+    footer = _must_find(body, lambda t: "JC Room Blocks" in t)
 
     # hotel name + TripAdvisor are RichText hyperlinks -> use docxtpl's {{r ... }}
     # run syntax (plain {{ }} would nest the <w:hyperlink> inside a <w:t>, which
@@ -210,9 +248,19 @@ def build(src_path, out_path):
     # plain scalars
     replace_tokens(p_addr1, {"[Hotel Address Line 1]": "{{ hotel.address_line_1 }}"})
     replace_tokens(p_city1, {"[City, State ZIP]": "{{ hotel.city_state_zip }}"})
-    replace_tokens(p_dist1, {"[Venue Name]": "{{ venue_name }}",
-                             "[Driving distance from Google Maps]": "{{ hotel.distance_from_venue }}"})
-    replace_tokens(p_cut1, {"[# days/weeks/months]": "{{ hotel.cutoff }}"})
+    # Consume the template's hardcoded " miles" / " prior to arrival" suffixes so
+    # distance_from_venue and cutoff carry the full free-form display text
+    # (e.g. "Across the street" / "30 days prior to arrival, by Mar 17").
+    replace_tokens(
+        p_dist1,
+        {
+            "[Venue Name]": "{{ venue_name }}",
+            "[Driving distance from Google Maps] miles": "{{ hotel.distance_from_venue }}",
+        },
+    )
+    replace_tokens(p_cut1, {"[# days/weeks/months] prior to arrival": "{{ hotel.cutoff }}"})
+    # Correct the client template's misspelled footer email (Blcoks -> Blocks).
+    replace_tokens(footer, {"JCRoomBlcoks": "JCRoomBlocks"})
 
     # rate table -> {%tr%} row loop (dedicated for/endfor rows around the data
     # row; docxtpl replaces each tag-row with a bare Jinja tag)
@@ -250,14 +298,19 @@ def build(src_path, out_path):
     for el in to_delete:
         body.remove(el)
 
-    # drop orphaned hyperlink relationships (the deleted hotel's stale reference
-    # URLs) so no wrong links linger in the template
+    _drop_orphan_hyperlink_rels(doc, body)
+
+    Path(out_path).parent.mkdir(parents=True, exist_ok=True)
+    doc.save(str(out_path))
+    return Path(out_path)
+
+
+@validated
+def _drop_orphan_hyperlink_rels(doc: Element, body: Element) -> None:
+    """Remove hyperlink relationships no longer referenced by any ``<w:hyperlink>``
+    (e.g. the deleted hotel's stale reference URLs), so no wrong links linger."""
     used = {h.get(qn("r:id")) for h in body.iter(qn("w:hyperlink")) if h.get(qn("r:id"))}
     rels = doc.part.rels
     for rid, rel in list(rels.items()):
         if rel.reltype.endswith("/hyperlink") and rid not in used:
             rels.pop(rid)
-
-    Path(out_path).parent.mkdir(parents=True, exist_ok=True)
-    doc.save(str(out_path))
-    return out_path

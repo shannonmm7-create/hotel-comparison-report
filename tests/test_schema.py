@@ -1,55 +1,61 @@
+"""Table-driven tests for schema validation error reporting."""
+
+from __future__ import annotations
+
 import copy
+from typing import Any
+
+import pytest
 
 from hotel_report.schema import validation_errors
 
-
-def test_example_is_valid(example_data):
-    assert validation_errors(example_data) == []
+_DELETE = object()  # sentinel: remove the key instead of setting it
 
 
-def test_missing_required_top_level_field(example_data):
+def _mutate(data: dict[str, Any], path: tuple[Any, ...], value: Any) -> None:
+    """Set ``data[path[0]][path[1]]… = value`` (or delete the leaf if value is _DELETE)."""
+    target = data
+    for key in path[:-1]:
+        target = target[key]
+    if value is _DELETE:
+        del target[path[-1]]
+    else:
+        target[path[-1]] = value
+
+
+@pytest.mark.parametrize(
+    ("path", "value", "needle"),
+    [
+        pytest.param(("venue_name",), _DELETE, "venue_name", id="missing-required-top-level"),
+        pytest.param(("hotels",), [], "hotels", id="empty-hotels-list"),
+        pytest.param(("hotels", 0, "rooms", 0, "offered_rate"), _DELETE, "offered_rate", id="room-missing-rate"),
+        pytest.param(("hotels", 0, "surprise"), "x", "surprise", id="unknown-field-forbidden"),
+        pytest.param(("hotels", 0, "cutoff"), "", "cutoff", id="empty-cutoff"),
+        pytest.param(("hotels", 0, "distance_from_venue"), "", "distance_from_venue", id="empty-distance"),
+        pytest.param(("hotels", 0, "tripadvisor", "text"), "", "tripadvisor", id="empty-tripadvisor-text"),
+        pytest.param(("hotels", 0, "website_url"), "not-a-url", "website_url", id="bad-website-url"),
+    ],
+)
+def test_invalid_data_is_reported(example_data: dict[str, Any], path: tuple[Any, ...], value: Any, needle: str) -> None:
+    """Each invalid mutation yields an error mentioning the offending field."""
     data = copy.deepcopy(example_data)
-    del data["venue_name"]
+    _mutate(data, path, value)
     errors = validation_errors(data)
-    assert any("venue_name" in e for e in errors)
+    assert any(needle in err for err in errors), errors
 
 
-def test_hotels_cannot_be_empty(example_data):
+@pytest.mark.parametrize(
+    ("path", "value"),
+    [
+        pytest.param((), None, id="unchanged-example"),
+        pytest.param(("hotels", 0, "rooms", 0, "offered_rate"), "Waived", id="string-rate"),
+        pytest.param(("hotels", 0, "distance_from_venue"), "Across the street", id="free-form-distance"),
+        pytest.param(("hotels", 0, "tripadvisor"), None, id="tripadvisor-omitted"),
+    ],
+)
+def test_valid_data_passes(example_data: dict[str, Any], path: tuple[Any, ...], value: Any) -> None:
+    """Each valid variation of the example produces no errors."""
     data = copy.deepcopy(example_data)
-    data["hotels"] = []
-    assert validation_errors(data)
-
-
-def test_room_requires_rates(example_data):
-    data = copy.deepcopy(example_data)
-    del data["hotels"][0]["rooms"][0]["offered_rate"]
-    errors = validation_errors(data)
-    assert any("offered_rate" in e for e in errors)
-
-
-def test_unknown_field_is_rejected(example_data):
-    data = copy.deepcopy(example_data)
-    data["hotels"][0]["surprise"] = "nope"
-    assert validation_errors(data)
-
-
-def test_rate_may_be_number_or_string(example_data):
-    data = copy.deepcopy(example_data)
-    data["hotels"][0]["rooms"][0]["offered_rate"] = "Waived"
-    assert validation_errors(data) == []
-
-
-def test_empty_visible_scalars_rejected(example_data):
-    for field in ("cutoff", "distance_from_venue"):
-        data = copy.deepcopy(example_data)
-        data["hotels"][0][field] = ""
-        assert validation_errors(data), field
-    data = copy.deepcopy(example_data)
-    data["hotels"][0]["tripadvisor"]["text"] = ""
-    assert validation_errors(data)
-
-
-def test_numeric_distance_still_valid(example_data):
-    data = copy.deepcopy(example_data)
-    data["hotels"][0]["distance_from_venue"] = 8
+    if path:
+        _mutate(data, path, value)
     assert validation_errors(data) == []

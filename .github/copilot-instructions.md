@@ -8,7 +8,7 @@ it. Summary so you don't go off-script:
   `.docx`.** You only assemble JSON.
 - **Always use `uv`** (locked, cross-platform). Don't `pip install` or call
   `python` directly for the CLI.
-- The data must match `src/hotel_report/schema/report.schema.json` (`additionalProperties: false`
+- The data must match the Pydantic models in `src/hotel_report/models.py` (`extra` forbidden
   — no invented fields). Validate before rendering.
 
 Do the work:

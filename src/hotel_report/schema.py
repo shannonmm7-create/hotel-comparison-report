@@ -1,24 +1,35 @@
-"""Load and validate report data against the JSON Schema contract."""
+"""Validate report data and expose the JSON Schema — both backed by the Pydantic
+models in :mod:`hotel_report.models` (the single source of truth)."""
+
 from __future__ import annotations
 
-import json
-from importlib.resources import files
+from typing import Any
 
-from jsonschema import Draft202012Validator
+from pydantic import ValidationError
 
-SCHEMA_RESOURCE = files("hotel_report").joinpath("schema/report.schema.json")
-
-
-def load_schema() -> dict:
-    with SCHEMA_RESOURCE.open(encoding="utf-8") as fh:
-        return json.load(fh)
+from hotel_report._validate import validated
+from hotel_report.models import Report
 
 
-def validation_errors(data) -> list[str]:
-    """Return a list of human-readable validation errors ([] means valid)."""
-    validator = Draft202012Validator(load_schema())
-    out = []
-    for err in sorted(validator.iter_errors(data), key=lambda e: list(e.path)):
-        loc = "/".join(str(p) for p in err.path) or "(root)"
-        out.append(f"{loc}: {err.message}")
-    return out
+@validated
+def validation_errors(data: object) -> list[str]:
+    """Return human-readable validation errors for ``data``.
+
+    An empty list means the data is a valid :class:`~hotel_report.models.Report`.
+    Each error is ``"<field/path>: <message>"`` so the offending field is obvious.
+    """
+    try:
+        Report.model_validate(data)
+    except ValidationError as exc:
+        errors = []
+        for err in exc.errors():
+            loc = "/".join(str(part) for part in err["loc"]) or "(root)"
+            errors.append(f"{loc}: {err['msg']}")
+        return errors
+    return []
+
+
+@validated
+def json_schema() -> dict[str, Any]:
+    """The JSON Schema (draft 2020-12) generated from the Pydantic models."""
+    return Report.model_json_schema()

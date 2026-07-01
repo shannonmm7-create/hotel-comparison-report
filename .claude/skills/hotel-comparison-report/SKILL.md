@@ -17,7 +17,8 @@ Full guide: [`AGENTS.md`](../../../AGENTS.md). Engine internals & docx gotchas:
 1. **Sync once:** `uv sync` (installs the locked dependencies).
 2. **See the contract:** `uv run hotel-report schema` (JSON Schema) and
    `uv run hotel-report example my_report.json` (a complete example to adapt).
-3. **Write the data JSON.** Match `src/hotel_report/schema/report.schema.json` exactly — no extra
+3. **Write the data JSON.** Match the Pydantic models in `src/hotel_report/models.py`
+   (run `uv run hotel-report schema` to see the generated JSON Schema) — no extra
    fields. Shape: top-level `prepared_for`, `arrival_date`, `departure_date`,
    `venue_name`, `hotels[]`; each hotel has `name` (+ optional `website_url`),
    `address_line_1`, `city_state_zip`, optional `tripadvisor{text,url}`,

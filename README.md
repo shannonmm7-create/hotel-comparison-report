@@ -39,11 +39,15 @@ locked and identical on macOS, Windows, and Linux. Install uv once
 then:
 
 ```bash
-uv sync                                                   # install locked deps
+uv sync                                                   # install locked deps (uv fetches Python 3.14)
 uv run hotel-report example my_report.json                # scaffold a data file
 uv run hotel-report validate my_report.json               # check it against the schema
 uv run hotel-report render my_report.json report.docx     # produce the .docx
 ```
+
+The project targets **Python 3.14** — uv installs it for you, no system Python
+needed. The dev quality gate (ruff, black, mypy, pylint, interrogate, bandit,
+codespell, pytest) runs via [`nox`](https://nox.thea.codes/): `uv run nox`.
 
 Other commands:
 
@@ -56,10 +60,10 @@ uv run pytest                        # run the test suite
 
 ## The data contract
 
-`hotel-report render` accepts one JSON object. Shape (see
-[`src/hotel_report/schema/report.schema.json`](src/hotel_report/schema/report.schema.json)
-for the authoritative, validated version — or run `uv run hotel-report schema` —
-and `uv run hotel-report example` for a complete example):
+`hotel-report render` accepts one JSON object. The authoritative contract is the
+Pydantic models in [`src/hotel_report/models.py`](src/hotel_report/models.py); run
+`uv run hotel-report schema` for the JSON Schema generated from them, or
+`uv run hotel-report example` for a complete example. Shape:
 
 ```jsonc
 {
@@ -99,12 +103,13 @@ through as-is). `features` / `concessions` / `contracting_options` are free list
 
 ```
 src/hotel_report/
+  models.py           Pydantic data contract (the schema is generated from it)
   cli.py              validate / render / schema / example / build-template
   render.py           docxtpl fill + currency + RichText hyperlinks
   build_template.py   source .docx -> Jinja template (regenerable)
-  schema.py           JSON-Schema validation
+  schema.py           validation + JSON-Schema export (Pydantic-backed)
+  _validate.py        the @validated decorator (runtime signature enforcement)
   templates/          the generated Jinja template (shipped)
-  schema/             report.schema.json — the data contract (shipped)
   data/               example_report.json (shipped; `hotel-report example`)
 assets/source_template.docx   the client's source document (build input)
 tests/                        schema + render + build-template tests

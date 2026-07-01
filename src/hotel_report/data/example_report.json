@@ -35,8 +35,8 @@
         "Courtesy agreement — no financial responsibility to client",
         "Hotel can hold 12 rooms per night"
       ],
-      "distance_from_venue": "8.1",
-      "cutoff": "30 days"
+      "distance_from_venue": "8.1 miles",
+      "cutoff": "30 days prior to arrival, by April 14, 2027"
     },
     {
       "name": "Hotel Bennett",
@@ -67,8 +67,8 @@
         "> Cut-off date for this option is 45 days prior to arrival",
         "Credit card authorization required at signing"
       ],
-      "distance_from_venue": "8.4",
-      "cutoff": "45 days"
+      "distance_from_venue": "8.4 miles",
+      "cutoff": "45 days prior to arrival"
     },
     {
       "name": "The Restoration",
@@ -94,8 +94,8 @@
       "contracting_options": [
         "Courtesy agreement — no financial responsibility to client"
       ],
-      "distance_from_venue": "8.0",
-      "cutoff": "30 days"
+      "distance_from_venue": "8.0 miles",
+      "cutoff": "30 days prior to arrival"
     }
   ]
 }

@@ -17,9 +17,10 @@ the `.docx` yourself.**
 1. **Always run through `uv`.** It pins the exact dependency versions (a committed
    `uv.lock`), so behavior is identical on macOS/Windows/Linux. Never
    `pip install` or call `python` directly for the CLI.
-2. **The JSON Schema is the contract.** The data must match
-   `src/hotel_report/schema/report.schema.json`. Validate before rendering. Do not invent fields
-   (`additionalProperties` is `false`).
+2. **The Pydantic models are the contract.** The data must match the models in
+   `src/hotel_report/models.py` (run `uv run hotel-report schema` to see the
+   generated JSON Schema). Validate before rendering. Do not invent fields
+   (`extra` is forbidden / `additionalProperties: false`).
 3. **Don't touch the `.docx` by hand.** To change the *layout*, edit the source
    (`assets/source_template.docx`) and regenerate via `build-template`. To change
    *content*, change the data JSON.
@@ -61,17 +62,37 @@ length), `distance_from_venue` (number only; template adds " miles"), `cutoff`
 
 ## Tests & CI
 
+Python **3.14** (uv fetches it automatically). The full quality gate — run any
+session with `uv run nox -s <name>`, or the whole default set with `uv run nox`:
+
 ```bash
-uv run pytest          # schema + render + build-template tests
-uv run ruff check .    # lint
+uv run ruff check .                          # lint (incl. pylint PL ruleset)
+uv run black --check .                        # format
+uv run mypy                                   # types — src AND tests
+uv run pylint src/hotel_report                # semantic/design checks
+uv run interrogate src tests                  # 100% docstring coverage
+uv run bandit -c pyproject.toml -q -r src tests   # security
+uv run codespell                              # spelling
+uv run pytest                                 # tests + 90% coverage gate
 ```
 
-CI (`.github/workflows/ci.yml`) runs both on every push/PR. Keep them green.
+CI (`.github/workflows/ci.yml`) runs the quality gate on Linux and the tests on
+Linux/macOS/Windows. Keep them green. Notes for contributors:
+- Every function is annotated and decorated with `@validated`
+  (`pydantic.validate_call`), so arguments are checked at runtime too — keep new
+  functions typed and decorated to match.
+- **tests are held to the same bar** (types, docstrings, lint).
+- Config carries almost no blanket exclusions; the few genuine false positives are
+  ejected **inline with a commented directive** (`# noqa`, `# pylint: disable=`,
+  `# type: ignore[...]`). Prefer that over widening a config ignore.
+- More tools available via nox: `benchmarks` (pytest-benchmark), `mutation`
+  (mutmut). Property tests use hypothesis; the JSON-Schema snapshot uses syrupy.
 
 ## Where things live
 
+- `src/hotel_report/models.py` — Pydantic models = the data contract
 - `src/hotel_report/cli.py` — the `hotel-report` command
 - `src/hotel_report/render.py` — docxtpl fill, currency, RichText hyperlinks
 - `src/hotel_report/build_template.py` — source `.docx` → Jinja template
-- `src/hotel_report/schema.py` + `src/hotel_report/schema/report.schema.json` — the contract
+- `src/hotel_report/schema.py` — validation + JSON-Schema export (Pydantic-backed)
 - `docs/docx-templating-notes.md` — **read before editing the engine**

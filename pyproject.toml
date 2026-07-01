@@ -65,7 +65,7 @@ select = ["E", "F", "I", "UP", "B", "PL"]
 # black is the formatter; ruff is lint-only (no competing `ruff format` gate).
 [tool.black]
 line-length = 120
-# target-version inferred from requires-python (>=3.14)
+target-version = ["py314"]  # pin so black doesn't infer py315 and warn in CI
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

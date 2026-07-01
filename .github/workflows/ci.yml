@@ -6,17 +6,26 @@ on:
   pull_request:
 
 jobs:
-  quality:
-    name: quality (lint / type / format / security)
-    runs-on: ubuntu-latest
+  ci:
+    name: ci (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        # one self-contained job per OS: lint + type + format + security + tests,
+        # so every job's log shows the full output (including the pytest run).
+        os: [ubuntu-latest, macos-latest, windows-latest]
     steps:
       - uses: actions/checkout@v4
+
       - name: Install uv
         uses: astral-sh/setup-uv@v5
         with:
           enable-cache: true
-      - name: Sync locked environment
+
+      - name: Sync locked environment (uv fetches the pinned Python)
         run: uv sync --frozen
+
       - name: Ruff (lint)
         run: uv run ruff check .
       - name: Black (format check)
@@ -25,34 +34,20 @@ jobs:
         run: uv run mypy
       - name: Pylint
         run: uv run pylint src/hotel_report
-      - name: Interrogate (docstring coverage)
+      - name: Interrogate (docstring coverage, src + tests)
         run: uv run interrogate src tests
-      - name: Bandit (security)
+      - name: Bandit (security, src + tests)
         run: uv run bandit -c pyproject.toml -q -r src tests
       - name: Codespell
         run: uv run codespell
 
-  test:
-    name: test (${{ matrix.os }})
-    runs-on: ${{ matrix.os }}
-    strategy:
-      fail-fast: false
-      matrix:
-        # prove the locked env works on all three platforms the team uses
-        os: [ubuntu-latest, macos-latest, windows-latest]
-    steps:
-      - uses: actions/checkout@v4
-      - name: Install uv
-        uses: astral-sh/setup-uv@v5
-        with:
-          enable-cache: true
-      - name: Sync locked environment (uv fetches the pinned Python)
-        run: uv sync --frozen
-      - name: Test (coverage, in parallel)
+      - name: Test (100% coverage gate, in parallel)
         run: uv run pytest -n auto
+
       - name: Smoke-render the example report
         # single line with && so it short-circuits identically on bash and PowerShell
         run: uv run hotel-report example example_report.json && uv run hotel-report render example_report.json report.docx
+
       - name: Upload rendered report
         if: matrix.os == 'ubuntu-latest'
         uses: actions/upload-artifact@v4

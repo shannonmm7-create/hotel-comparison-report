@@ -36,14 +36,18 @@ before touching `build_template.py` or `render.py`.
 Everything runs through [uv](https://docs.astral.sh/uv/) so the environment is
 locked and identical on macOS, Windows, and Linux. Install uv once
 (`curl -LsSf https://astral.sh/uv/install.sh | sh`, or `winget install astral-sh.uv`),
-then:
+then run these from the repo **in order** — step 2 creates the `my_report.json`
+that steps 3–4 read:
 
 ```bash
-uv sync                                                   # install locked deps (uv fetches Python 3.14)
-uv run hotel-report example my_report.json                # scaffold a data file
-uv run hotel-report validate my_report.json               # check it against the schema
-uv run hotel-report render my_report.json report.docx     # produce the .docx
+uv sync                                                   # 1. install locked deps (uv fetches Python 3.14)
+uv run hotel-report example my_report.json                # 2. write a starter my_report.json — then edit it
+uv run hotel-report validate my_report.json               # 3. check it against the schema
+uv run hotel-report render my_report.json report.docx     # 4. fill the template -> report.docx
 ```
+
+(`render` reads `my_report.json`; run step 2 first or point it at your own JSON
+file, otherwise you'll get `error: no such file: my_report.json`.)
 
 The project targets **Python 3.14** — uv installs it for you, no system Python
 needed. The dev quality gate (ruff, black, mypy, pylint, interrogate, bandit,
@@ -84,8 +88,8 @@ Pydantic models in [`src/hotel_report/models.py`](src/hotel_report/models.py); r
       "features": ["On-site restaurant & bar – Henrietta's", "Fitness center"],
       "concessions": ["Complimentary Wi-Fi"],
       "contracting_options": ["Courtesy agreement — no financial responsibility"],
-      "distance_from_venue": "8.1",              // template appends " miles"
-      "cutoff": "30 days"                         // template appends " prior to arrival"
+      "distance_from_venue": "8.1 miles",        // free-form; shown verbatim
+      "cutoff": "30 days prior to arrival"        // free-form; shown verbatim
     }
   ]
 }

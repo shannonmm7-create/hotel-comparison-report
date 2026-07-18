@@ -1,12 +1,80 @@
-# macOS
-.DS_Store
-
+# ─────────────────────────────────────────────────────────────────────────────
 # Python
+# ─────────────────────────────────────────────────────────────────────────────
 __pycache__/
-*.pyc
-*.pyo
+*.py[cod]
+*$py.class
+*.egg
+*.egg-info/
+.eggs/
+build/
+dist/
+wheels/
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.pytype/
+.coverage
+.coverage.*
+htmlcov/
+.tox/
+.nox/
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Virtual environments / uv  (uv.lock IS committed — do not ignore it)
+# ─────────────────────────────────────────────────────────────────────────────
 .venv/
 venv/
+env/
+ENV/
+.python-version
 
-# Claude Code local machine settings (permissions, etc.)
-.claude/settings.local.json
+# ─────────────────────────────────────────────────────────────────────────────
+# Rendered report output — regenerate with `uv run hotel-report render ...`.
+# Ignore all .docx, then re-include the two we intentionally track.
+# ─────────────────────────────────────────────────────────────────────────────
+*.docx
+!assets/source_template.docx
+!src/hotel_report/templates/hotel_comparison_report.docx
+!examples/example_report.docx
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Editors / IDEs
+# ─────────────────────────────────────────────────────────────────────────────
+.idea/
+*.swp
+*.swo
+*~
+# Keep the shared VS Code extension recommendations; ignore personal settings.
+.vscode/*
+!.vscode/extensions.json
+
+# ─────────────────────────────────────────────────────────────────────────────
+# macOS
+# ─────────────────────────────────────────────────────────────────────────────
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+.AppleDouble
+.LSOverride
+Icon
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Windows
+# ─────────────────────────────────────────────────────────────────────────────
+Thumbs.db
+Thumbs.db:encryptable
+ehthumbs.db
+ehthumbs_vista.db
+Desktop.ini
+$RECYCLE.BIN/
+*.lnk
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Linux
+# ─────────────────────────────────────────────────────────────────────────────
+.directory
+.Trash-*
+.fuse_hidden*

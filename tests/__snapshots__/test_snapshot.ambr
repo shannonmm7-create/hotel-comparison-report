@@ -1,0 +1,238 @@
+# serializer version: 1
+# name: test_json_schema_snapshot
+  dict({
+    '$defs': dict({
+      'Hotel': dict({
+        'additionalProperties': False,
+        'description': 'A single hotel block; the template repeats one of these per entry.',
+        'properties': dict({
+          'address_line_1': dict({
+            'description': 'Street address.',
+            'minLength': 1,
+            'title': 'Address Line 1',
+            'type': 'string',
+          }),
+          'city_state_zip': dict({
+            'description': "City, state and ZIP, e.g. 'Charleston, SC 29403'.",
+            'minLength': 1,
+            'title': 'City State Zip',
+            'type': 'string',
+          }),
+          'concessions': dict({
+            'description': 'Concessions bullets.',
+            'items': dict({
+              'type': 'string',
+            }),
+            'title': 'Concessions',
+            'type': 'array',
+          }),
+          'contracting_options': dict({
+            'description': 'Contracting Option bullets.',
+            'items': dict({
+              'type': 'string',
+            }),
+            'title': 'Contracting Options',
+            'type': 'array',
+          }),
+          'cutoff': dict({
+            'description': "Full cut-off text, e.g. '30 days prior to arrival, by March 17, 2027'.",
+            'minLength': 1,
+            'title': 'Cutoff',
+            'type': 'string',
+          }),
+          'distance_from_venue': dict({
+            'description': "Full distance text incl. units, e.g. '8.1 miles' or 'Across the street'.",
+            'minLength': 1,
+            'title': 'Distance From Venue',
+            'type': 'string',
+          }),
+          'features': dict({
+            'description': 'Hotel Features bullets (full text of each bullet).',
+            'items': dict({
+              'type': 'string',
+            }),
+            'title': 'Features',
+            'type': 'array',
+          }),
+          'name': dict({
+            'description': 'Hotel name.',
+            'minLength': 1,
+            'title': 'Name',
+            'type': 'string',
+          }),
+          'rooms': dict({
+            'description': 'Rate-table rows; the template repeats one row per entry.',
+            'items': dict({
+              '$ref': '#/$defs/Room',
+            }),
+            'minItems': 1,
+            'title': 'Rooms',
+            'type': 'array',
+          }),
+          'tripadvisor': dict({
+            'anyOf': list([
+              dict({
+                '$ref': '#/$defs/TripAdvisor',
+              }),
+              dict({
+                'type': 'null',
+              }),
+            ]),
+            'default': None,
+            'description': 'Optional TripAdvisor ranking line.',
+          }),
+          'website_url': dict({
+            'anyOf': list([
+              dict({
+                'minLength': 1,
+                'type': 'string',
+              }),
+              dict({
+                'type': 'null',
+              }),
+            ]),
+            'default': None,
+            'description': 'If present, the hotel name becomes a hyperlink to this URL.',
+            'title': 'Website Url',
+          }),
+        }),
+        'required': list([
+          'name',
+          'address_line_1',
+          'city_state_zip',
+          'rooms',
+          'distance_from_venue',
+          'cutoff',
+        ]),
+        'title': 'Hotel',
+        'type': 'object',
+      }),
+      'Room': dict({
+        'additionalProperties': False,
+        'description': "One row of a hotel's negotiated-rate table.",
+        'properties': dict({
+          'offered_rate': dict({
+            'anyOf': list([
+              dict({
+                'type': 'integer',
+              }),
+              dict({
+                'type': 'number',
+              }),
+              dict({
+                'type': 'string',
+              }),
+            ]),
+            'description': "Negotiated nightly rate (number -> $1,234, or a string like 'Waived').",
+            'title': 'Offered Rate',
+          }),
+          'rack_rate': dict({
+            'anyOf': list([
+              dict({
+                'type': 'integer',
+              }),
+              dict({
+                'type': 'number',
+              }),
+              dict({
+                'type': 'string',
+              }),
+            ]),
+            'description': "Standard 'rack' nightly rate (number or string).",
+            'title': 'Rack Rate',
+          }),
+          'room_type': dict({
+            'description': "Room category name, e.g. 'King Room'.",
+            'minLength': 1,
+            'title': 'Room Type',
+            'type': 'string',
+          }),
+        }),
+        'required': list([
+          'room_type',
+          'offered_rate',
+          'rack_rate',
+        ]),
+        'title': 'Room',
+        'type': 'object',
+      }),
+      'TripAdvisor': dict({
+        'additionalProperties': False,
+        'description': "A hotel's TripAdvisor ranking line. If ``url`` is given, ``text`` renders as a hyperlink.",
+        'properties': dict({
+          'text': dict({
+            'description': "Display text, e.g. '#4 of 45 hotels in Charleston'.",
+            'minLength': 1,
+            'title': 'Text',
+            'type': 'string',
+          }),
+          'url': dict({
+            'anyOf': list([
+              dict({
+                'minLength': 1,
+                'type': 'string',
+              }),
+              dict({
+                'type': 'null',
+              }),
+            ]),
+            'default': None,
+            'description': 'If present, the text becomes a hyperlink to this URL.',
+            'title': 'Url',
+          }),
+        }),
+        'required': list([
+          'text',
+        ]),
+        'title': 'TripAdvisor',
+        'type': 'object',
+      }),
+    }),
+    'additionalProperties': False,
+    'description': 'Top-level Hotel Comparison Report data — the root of the contract.',
+    'properties': dict({
+      'arrival_date': dict({
+        'description': "Human-readable arrival date, e.g. 'May 14, 2027'.",
+        'minLength': 1,
+        'title': 'Arrival Date',
+        'type': 'string',
+      }),
+      'departure_date': dict({
+        'description': "Human-readable departure date, e.g. 'May 16, 2027'.",
+        'minLength': 1,
+        'title': 'Departure Date',
+        'type': 'string',
+      }),
+      'hotels': dict({
+        'description': 'One entry per hotel.',
+        'items': dict({
+          '$ref': '#/$defs/Hotel',
+        }),
+        'minItems': 1,
+        'title': 'Hotels',
+        'type': 'array',
+      }),
+      'prepared_for': dict({
+        'description': "Client / event name, e.g. 'Rivera-Okafor Wedding'.",
+        'minLength': 1,
+        'title': 'Prepared For',
+        'type': 'string',
+      }),
+      'venue_name': dict({
+        'description': 'Event venue; shared by all hotels (distances are measured from it).',
+        'minLength': 1,
+        'title': 'Venue Name',
+        'type': 'string',
+      }),
+    }),
+    'required': list([
+      'prepared_for',
+      'arrival_date',
+      'departure_date',
+      'venue_name',
+      'hotels',
+    ]),
+    'title': 'Report',
+    'type': 'object',
+  })
+# ---

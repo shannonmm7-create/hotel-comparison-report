@@ -1,0 +1,8 @@
+{
+  "// note": "Recommended extensions for this repo. VS Code will offer to install these.",
+  "recommendations": [
+    "cweijan.vscode-office",
+    "charliermarsh.ruff",
+    "ms-python.python"
+  ]
+}

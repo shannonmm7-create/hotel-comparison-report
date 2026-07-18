@@ -1,0 +1,21 @@
+{
+  "name": "jc-room-blocks",
+  "interface": {
+    "displayName": "JC Room Blocks"
+  },
+  "plugins": [
+    {
+      "name": "hotel-comparison-report",
+      "source": {
+        "source": "url",
+        "url": "https://github.com/shannonmm7-create/hotel-comparison-report.git",
+        "ref": "main"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "Productivity"
+    }
+  ]
+}

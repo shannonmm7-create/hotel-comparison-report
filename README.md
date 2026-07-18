@@ -128,3 +128,25 @@ interchangeably. The agent-facing instructions live in
 in `.claude/skills/` both delegate to it. All three tell the agent to do the same
 thing: build a JSON file that matches the schema, then run
 `uv run hotel-report render …`.
+
+## Codex plugin
+
+This repository is also a Codex plugin. It bundles the report skill, renderer,
+locked dependencies, and approved templates so teammates can install one
+versioned package.
+
+After these plugin files are committed and pushed, add the repository as a
+marketplace and install the plugin:
+
+```bash
+codex plugin marketplace add shannonmm7-create/hotel-comparison-report
+codex plugin add hotel-comparison-report@jc-room-blocks
+```
+
+Then start a new Codex task and ask it to create a hotel comparison report. In
+the ChatGPT desktop app, teammates can instead open **Plugins**, select the
+**JC Room Blocks** marketplace, and install **Hotel Comparison Report**.
+
+The marketplace is defined in `.agents/plugins/marketplace.json`; the plugin
+manifest is `.codex-plugin/plugin.json`; and its Codex workflow is
+`skills/hotel-comparison-report/SKILL.md`.

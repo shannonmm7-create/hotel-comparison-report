@@ -1,0 +1,29 @@
+{
+  "name": "hotel-comparison-report",
+  "version": "0.1.0",
+  "description": "Generate validated JC Room Blocks hotel comparison reports from JSON using the approved Word template.",
+  "author": {
+    "name": "shannonmm7-create",
+    "email": "shannonmm7@gmail.com",
+    "url": "https://github.com/shannonmm7-create"
+  },
+  "homepage": "https://github.com/shannonmm7-create/hotel-comparison-report#readme",
+  "repository": "https://github.com/shannonmm7-create/hotel-comparison-report",
+  "license": "MIT",
+  "keywords": ["hotel", "room-blocks", "word", "reporting"],
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "Hotel Comparison Report",
+    "shortDescription": "Build approved hotel room-block reports.",
+    "longDescription": "Validates structured hotel data and renders the JC Room Blocks Hotel Comparison Report with the approved Word template and formatting.",
+    "developerName": "shannonmm7-create",
+    "category": "Productivity",
+    "capabilities": ["Document generation", "JSON validation"],
+    "websiteURL": "https://github.com/shannonmm7-create/hotel-comparison-report",
+    "defaultPrompt": [
+      "Create a hotel comparison report from my hotel data.",
+      "Validate my room-block report data and render the Word report."
+    ],
+    "brandColor": "#4F5965"
+  }
+}
